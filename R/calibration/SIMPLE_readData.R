@@ -32,7 +32,7 @@ obs_gis_time <- dat[1:52,9]
 obs_gis <- dat[1:52,12] # Annual Mass Balance in meters sea level equivalence
 obs_gis_err <- dat[1,15] # The error is +/- 30 Gt
 
-idx = compute_indices(obs.time=obs.gis.time, mod.time=mod_time)
+idx = compute_indices(obs.time=obs_gis_time, mod.time=mod_time)
 oidx_gis = idx$oidx; midx_gis = idx$midx
 
 ##==============================================================================

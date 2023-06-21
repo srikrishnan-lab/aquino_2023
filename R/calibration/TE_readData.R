@@ -35,11 +35,11 @@ obs_sl_err  = dat[,3]/1000
 
 ## Useful: set the indices of 1961-1990 (everything is anomaly relative to this
 ## time period, so make sure the sea levels are too)
-ibeg=which(obs.sl.time==begyear_norm)
-iend=which(obs.sl.time==endyear_norm)
+ibeg=which(obs_sl_time==begyear_norm)
+iend=which(obs_sl_time==endyear_norm)
 obs_sl = obs_sl - mean(obs_sl[ibeg:iend])
 
-idx = compute_indices(obs.time=obs.sl.time, mod.time=mod_time)
+idx = compute_indices(obs.time=obs_sl_time, mod.time=mod_time)
 oidx_sl = idx$oidx; midx_sl = idx$midx
 
 ## Set trends from IPCC AR5 Ch 13 (observational) to match:

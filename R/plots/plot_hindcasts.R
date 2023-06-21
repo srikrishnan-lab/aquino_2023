@@ -12,6 +12,7 @@ plot_path = "../../plots" # output path for plots
 # load scripts
 source("../util/MultipleOutput.R") # define multiple assignment operator
 source("../util/plot_utilities.R") # miscellaneous plot utilities
+source("../util/colorblindPalette.R") # palette for colorblind safety
 
 # load files
 t_hind <- readRDS(file=file.path(rds_path, "priors_0426_t_hind.rds")) # hindcast years
@@ -116,18 +117,42 @@ standard_slr_95 = rep(NA,length(t_hind))
 complete_slr_05 = rep(NA,length(t_hind))
 complete_slr_50 = rep(NA,length(t_hind))
 complete_slr_95 = rep(NA,length(t_hind))
+standard_ais_05 = rep(NA,length(t_hind))
+standard_ais_50 = rep(NA,length(t_hind))
+standard_ais_95 = rep(NA,length(t_hind))
+complete_ais_05 = rep(NA,length(t_hind))
+complete_ais_50 = rep(NA,length(t_hind))
+complete_ais_95 = rep(NA,length(t_hind))
 standard_gis_05 = rep(NA,length(t_hind))
 standard_gis_50 = rep(NA,length(t_hind))
 standard_gis_95 = rep(NA,length(t_hind))
 complete_gis_05 = rep(NA,length(t_hind))
 complete_gis_50 = rep(NA,length(t_hind))
 complete_gis_95 = rep(NA,length(t_hind))
+standard_gsic_05 = rep(NA,length(t_hind))
+standard_gsic_50 = rep(NA,length(t_hind))
+standard_gsic_95 = rep(NA,length(t_hind))
+complete_gsic_05 = rep(NA,length(t_hind))
+complete_gsic_50 = rep(NA,length(t_hind))
+complete_gsic_95 = rep(NA,length(t_hind))
+standard_te_05 = rep(NA,length(t_hind))
+standard_te_50 = rep(NA,length(t_hind))
+standard_te_95 = rep(NA,length(t_hind))
+complete_te_05 = rep(NA,length(t_hind))
+complete_te_50 = rep(NA,length(t_hind))
+complete_te_95 = rep(NA,length(t_hind))
 
 for (t in seq_along(t_hind)) {
   c(standard_gis_05[t],    standard_gis_50[t], standard_gis_95[t]) := quantile(standard_gis_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
   c(complete_gis_05[t],    complete_gis_50[t], complete_gis_95[t]) := quantile(complete_gis_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
+  c(standard_ais_05[t],    standard_ais_50[t], standard_ais_95[t]) := quantile(standard_ais_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
+  c(complete_ais_05[t],    complete_ais_50[t], complete_ais_95[t]) := quantile(complete_ais_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
   c(standard_slr_05[t],    standard_slr_50[t], standard_slr_95[t])				:= quantile(standard_gsl_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
   c(complete_slr_05[t],    complete_slr_50[t], complete_slr_95[t])				:= quantile(complete_gsl_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
+  c(standard_gsic_05[t],    standard_gsic_50[t], standard_gsic_95[t]) := quantile(standard_gsic_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
+  c(complete_gsic_05[t],    complete_gsic_50[t], complete_gsic_95[t]) := quantile(complete_gsic_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
+  c(standard_te_05[t],    standard_te_50[t], standard_te_95[t]) := quantile(standard_te_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
+  c(complete_te_05[t],    complete_te_50[t], complete_te_95[t]) := quantile(complete_te_hind[t,], c(0.05,.50,.95), na.rm=TRUE)
 }
 
 
@@ -199,6 +224,22 @@ paleo_ais <- rbind(standard_paleo_ais, complete_paleo_ais)
 paleo_ais$case <- factor(paleo_ais$case, levels=c("standard", "complete"))
 precal_windows <- data.frame(year_low = date[obs_years - 1000], year_high = pmin(date[obs_years + 1000], max(t_paleo[ipaleo]), na.rm = TRUE), lower = windows[, 1], upper = windows[, 2])
 
+standard_ais <- data.frame(
+  year = mod_time, 
+  med = standard_ais_50, 
+  lowerci = standard_ais_05, 
+  upperci = standard_ais_95,
+  case = "standard"
+  )
+complete_ais <- data.frame(
+  year = mod_time, 
+  med = complete_ais_50, 
+  lowerci = complete_ais_05, 
+  upperci = complete_ais_95,
+  case = "complete"
+  )
+ais <- rbind(standard_ais, complete_ais)
+
 ## Greenland Ice Sheet
 standard_gis <- data.frame(
   year = mod_time, 
@@ -216,6 +257,41 @@ complete_gis <- data.frame(
   )
 gis <- rbind(standard_gis, complete_gis)
 gis_obs <- data.frame(year = obs_gis_time, data = obs$gis)
+
+## Glaciers and Small ice Caps
+standard_gsic <- data.frame(
+  year = mod_time, 
+  med = standard_gsic_50, 
+  lowerci = standard_gsic_05, 
+  upperci = standard_gsic_95,
+  case = "standard"
+  )
+complete_gsic <- data.frame(
+  year = mod_time, 
+  med = complete_gsic_50, 
+  lowerci = complete_gsic_05, 
+  upperci = complete_gsic_95,
+  case = "complete"
+  )
+gsic <- rbind(standard_gsic, complete_gsic)
+gsic_obs <- data.frame(year = obs_gsic_time, data = obs$gsic)
+
+## Thermal Expansion
+standard_te <- data.frame(
+  year = mod_time, 
+  med = standard_te_50, 
+  lowerci = standard_te_05, 
+  upperci = standard_te_95,
+  case = "standard"
+  )
+complete_te <- data.frame(
+  year = mod_time, 
+  med = complete_te_50, 
+  lowerci = complete_te_05, 
+  upperci = complete_te_95,
+  case = "complete"
+  )
+te <- rbind(standard_te, complete_te)
 
 ## Global Mean Sea Level
 standard_gmsl <- data.frame(
@@ -239,8 +315,8 @@ gmsl_obs <- data.frame(year = obs_sl_time, data = obs$sl)
 data_colors <- c(complete=mycol.rgb[13], standard=mycol.rgb[7])
 
 ## AIS
-pais <- ggplot() + theme_classic(base_size = 16) + scale_color_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
-pais <- pais +
+ppaleo_ais <- ggplot() + theme_classic(base_size = 14) + scale_color_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
+ppaleo_ais <- ppaleo_ais +
         geom_line(data=paleo_ais, aes(x = year, y = med, color = case), lwd = 1) +
         geom_ribbon(data=paleo_ais, aes(x=year, ymin = lowerci, ymax = upperci, fill = case), alpha = 0.4) +
         new_scale_color() +
@@ -250,16 +326,27 @@ pais <- pais +
         scale_color_manual("", values = mycol.rgb[1]) +
         geom_hline(yintercept = 0, lty = 2) +
         xlim(min(t_paleo[ipaleo]), max(t_paleo[ipaleo])) +
-        xlab("Year") +
+        xlab("Year [BCE]") +
         ylab("[m SLE]") +
-        ggtitle("(a) Antarctic Ice Sheet") +
-        theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+        ggtitle("(a) Antarctic Ice Sheet (Paleo)") +
+        theme(plot.title = element_text(face = "bold", size=14), legend.position = "bottom")
 
-leg <- extract_legend(pais) # extract legend from figure for common use
-pais <- pais + theme(legend.position = "none") # remove extracted legend
+leg <- extract_legend(ppaleo_ais) # extract legend from figure for common use
+ppaleo_ais <- ppaleo_ais + theme(legend.position = "none") # remove extracted legend
+
+pais <- ggplot() + theme_classic(base_size = 14) + scale_color_manual("Median", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("95% Credible Interval", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
+pais <- pais +
+        geom_line(data=ais, aes(x = year, y = med, color = case), lwd = 1) +
+        geom_ribbon(data=ais, aes(x=year, ymin = lowerci, ymax = upperci, fill = case), alpha = 0.4) +
+        geom_hline(yintercept = 0, lty = 2) +
+        xlab("Year [CE]") +
+        xlim(c(1850, 2009)) +
+        ylab("[m SLE]") +
+        ggtitle("(b) Antarctic Ice Sheet (Modern)") +
+        theme(plot.title = element_text(face = "bold", size=12), legend.position = "none")
 
 ## GIS
-pgis <- ggplot() + theme_classic(base_size = 16) + scale_color_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
+pgis <- ggplot() + theme_classic(base_size = 14) + scale_color_manual("Median", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("95% Credible Interval", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
 pgis <- pgis +
         geom_line(data=gis, aes(x = year, y = med, color = case), lwd = 1) +
         geom_ribbon(data=gis, aes(x=year, ymin = lowerci, ymax = upperci, fill = case), alpha = 0.4) +
@@ -267,15 +354,43 @@ pgis <- pgis +
         geom_point(data=gis_obs, aes(x=year,  y = data, color = "Observations"), size=1, alpha=0.8) +
         scale_color_manual("", values = mycol.rgb[1]) +
         geom_hline(yintercept = 0, lty = 2) +
-        xlab("Year") +
+        xlab("Year [CE]") +
         xlim(c(1950, 2009)) +
         ylab("[m SLE]") +
         ylim(c(-0.003, 0.012)) +
         ggtitle("(b) Greenland Ice Sheet") +
-        theme(plot.title = element_text(face = "bold"), legend.position = "none")
+        theme(plot.title = element_text(face = "bold", size=14), legend.position = "none")
+
+## GSIC
+pgsic <- ggplot() + theme_classic(base_size = 14) + scale_color_manual("Median", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("95% Credible Interval", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
+pgsic <- pgsic +
+        geom_line(data=gsic, aes(x = year, y = med, color = case), lwd = 1) +
+        geom_ribbon(data=gsic, aes(x=year, ymin = lowerci, ymax = upperci, fill = case), alpha = 0.4) +
+        new_scale_color() +
+        geom_point(data=gsic_obs, aes(x=year,  y = data, color = "Observations"), size=1, alpha=0.8) +
+        scale_color_manual("", values = mycol.rgb[1]) +
+        geom_hline(yintercept = 0, lty = 2) +
+        xlab("Year [CE]") +
+        xlim(c(1950, 2009)) +
+        ylab("[m SLE]") +
+        ylim(c(-0.01, 0.045)) +
+        ggtitle("(c) Glaciers & Small Ice Caps") +
+        theme(plot.title = element_text(face = "bold", size=14), legend.position = "none")
+
+pte <- ggplot() + theme_classic(base_size = 14) + scale_color_manual("Median", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("95% Credible Interval", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
+pte <- pte +
+        geom_line(data=te, aes(x = year, y = med, color = case), lwd = 1) +
+        geom_ribbon(data=te, aes(x=year, ymin = lowerci, ymax = upperci, fill = case), alpha = 0.4) +
+        geom_hline(yintercept = 0, lty = 2) +
+        xlab("Year [CE]") +
+        xlim(c(1950, 2009)) +
+        ylab("[m SLE]") +
+        ylim(c(-0.025, 0.04)) +
+        ggtitle("(e) Thermal Expansion") +
+        theme(plot.title = element_text(face = "bold", size=14), legend.position = "none")
 
 ## GMSL
-pgmsl <- ggplot() + theme_classic(base_size = 16) + scale_color_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("Calibration", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
+pgmsl <- ggplot() + theme_classic(base_size = 14) + scale_color_manual("Median", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only")) + scale_fill_manual("95% Credible Interval", values = data_colors, labels = c(complete="Data + Experts", standard = "Data Only"))
 pgmsl <- pgmsl +
         geom_line(data=gmsl, aes(x = year, y = med, color = case), lwd = 1) +
         geom_ribbon(data=gmsl, aes(x=year, ymin = lowerci, ymax = upperci, fill = case), alpha = 0.4) +
@@ -283,15 +398,23 @@ pgmsl <- pgmsl +
         geom_point(data=gmsl_obs, aes(x=year,  y = data, color = "Observations"), size=1, alpha=0.8) +
         scale_color_manual("", values = mycol.rgb[1]) +
         geom_hline(yintercept = 0, lty = 2) +
-        xlab("Year") +
+        xlab("Year [CE]") +
         xlim(c(1850, 2009)) +
         ylab("[m SLE]") +
         ylim(c(-0.25, 0.12)) +
-        ggtitle("(c) Global Mean Sea Level") +
-        theme(plot.title = element_text(face = "bold"), legend.position = "none")
+        ggtitle("(d) Global Mean Sea Level") +
+        theme(plot.title = element_text(face = "bold", size=14), legend.position = "none")
 
 ## combine plots into one panel
 
-png("../../plots/hindcast.png", width=180, height=180, units="mm", res=600)
-p <- grid.arrange(arrangeGrob(pais, pgis, pgmsl, ncol=1), leg, ncol=1, heights=c(10, 1))
+png("../../plots/hindcast.png", width=180, height=150, units="mm", res=600)
+laymat <- rbind(c(1, 2), c(3, 4), c(5, 5))
+p <- grid.arrange(grobs=list(ppaleo_ais, pgis, pgsic, pgmsl, leg), layout_matrix = laymat, heights = c(10, 10, 1))
 dev.off()
+
+png("../../plots/hindcast_supplement.png", width=200, height=200, units="mm", res=600)
+laymat <- rbind(c(1, 2), c(3, 4), c(5, 6), c(7, 7))
+p <- grid.arrange(grobs=list(ppaleo_ais, pais, pgis, pgsic, pte, pgmsl, leg), layout_matrix = laymat, heights = c(10, 10, 10, 1))
+dev.off()
+
+setwd(main_path)

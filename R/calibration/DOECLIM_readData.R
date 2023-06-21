@@ -51,8 +51,8 @@ dat = read.table("../../data/HadCRUT.4.4.0.0.annual_ns_avg_realisations/HadCRUT.
 obs_temp_err = dat[,3]
 
 # Normalize temperature anomaly so 1961-1990 mean is 0
-ibeg=which(obs.temp.time==1850)
-iend=which(obs.temp.time==1870)
+ibeg=which(obs_temp_time==1850)
+iend=which(obs_temp_time==1870)
 obs_temp = obs.temp - mean(obs.temp[ibeg:iend])
 
 # annual global ocean heat content (0-3000 m)
@@ -61,10 +61,10 @@ obs_ocheat = dat[,2]
 obs_ocheat_time = dat[,1]
 obs_ocheat_err = dat[,3]
 
-idx = compute_indices(obs.time=obs.temp.time, mod.time=mod_time)
+idx = compute_indices(obs.time=obs_temp_time, mod.time=mod_time)
 oidx_temp = idx$oidx; midx_temp = idx$midx
 
-idx = compute_indices(obs.time=obs.ocheat.time, mod.time=mod_time)
+idx = compute_indices(obs.time=obs_ocheat_time, mod.time=mod_time)
 oidx_ocheat = idx$oidx; midx_ocheat = idx$midx
 
 ##==============================================================================

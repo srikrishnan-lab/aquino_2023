@@ -38,7 +38,7 @@ obs_gsic_time <- dat[1:43, 1] #1961-2003
 obs_gsic <- dat[1:43, 5]/1000 # m of melt contribution to sea level rise (Note -- data are in mm)
 obs_gsic_err <- dat[1:43,9]/1000 # m (standard error) (Note -- data are in mm)
 
-idx <- compute_indices(obs.time=obs.gsic.time, mod.time=mod_time)
+idx <- compute_indices(obs.time=obs_gsic_time, mod.time=mod_time)
 oidx_gsic <- idx$oidx; midx_gsic <- idx$midx
 
 ##==============================================================================
